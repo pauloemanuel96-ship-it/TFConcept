@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TF Concept — Brand Suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --areia:#EDE4D8;
+    --areia-soft:#F6F0E7;
+    --cream:#FFFDF9;
+    --terracota:#C9694E;
+    --terracota-deep:#96432E;
+    --terracota-tint:#E8B8A8;
+    --rosa:#C6567A;
+    --rosa-deep:#8F3552;
+    --rosa-tint:#EAB9CB;
+    --oliva:#3F4A3C;
+    --oliva-deep:#2E362B;
+    --ink:#2B2B28;
+    --ink-soft:rgba(43,43,40,0.62);
+    --line:rgba(43,43,40,0.14);
+    --line-on-dark:rgba(237,228,216,0.24);
+    --shadow: 0 30px 60px -25px rgba(43,43,40,0.35);
+    --ease: cubic-bezier(.22,.68,.14,1);
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    font-family:'Jost', sans-serif;
+    background:var(--areia);
+    color:var(--ink);
+    overflow-x:hidden;
+  }
+
+  ::selection{ background:var(--terracota); color:var(--cream); }
+
+  h1,h2,h3,.serif{ font-family:'Fraunces', serif; font-weight:500; letter-spacing:-0.01em; }
+
+  .eyebrow{
+    font-family:'Jost', sans-serif;
+    font-weight:600;
+    font-size:12.5px;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--terracota-deep);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:26px;
+    height:1px;
+    background:var(--terracota-deep);
+    display:inline-block;
+  }
+  .eyebrow.on-dark{ color:var(--terracota-tint); }
+  .eyebrow.on-dark::before{ background:var(--terracota-tint); }
+
+  /* ---------- stitch motif : the signature element ---------- */
+  .stitch{
+    height:10px;
+    background-image: repeating-linear-gradient(
+      90deg,
+      currentColor 0, currentColor 7px,
+      transparent 7px, transparent 15px
+    );
+    background-position: center;
+    background-size: 100% 2px;
+    background-repeat: repeat-x;
+    color:var(--terracota);
+    opacity:.55;
+  }
+  .stitch.thin{ height:6px; }
+  .stitch.dark{ color:var(--oliva); }
+  .stitch.on-dark{ color:var(--terracota-tint); opacity:.5; }
+
+  .seal{
+    width:96px; height:96px;
+    border-radius:50%;
+    border:1.5px solid currentColor;
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+    flex-shrink:0;
+  }
+  .seal::before{
+    content:"";
+    position:absolute; inset:7px;
+    border-radius:50%;
+    border:1px dashed currentColor;
+    opacity:.55;
+  }
+  .seal span{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-size:15px;
+    letter-spacing:0.02em;
+  }
+
+  /* ---------- scaffolding ---------- */
+  .rail{
+    position:fixed;
+    right:26px; top:50%; transform:translateY(-50%);
+    z-index:60;
+    display:flex; flex-direction:column; gap:13px;
+    align-items:flex-end;
+  }
+  .rail button{
+    all:unset;
+    cursor:pointer;
+    display:flex; align-items:center; gap:10px;
+    color:var(--ink);
+  }
+  .rail button .dot{
+    width:7px; height:7px; border-radius:50%;
+    background:rgba(43,43,40,0.28);
+    transition: all .35s var(--ease);
+  }
+  .rail button .lbl{
+    font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
+    opacity:0; transform:translateX(6px);
+    transition: all .35s var(--ease);
+    white-space:nowrap;
+    font-weight:600;
+  }
+  .rail button:hover .lbl{ opacity:.7; transform:translateX(0); }
+  .rail button:focus-visible .dot{ outline:2px solid var(--terracota-deep); outline-offset:3px; }
+  .rail button.active .dot{ background:var(--terracota-deep); transform:scale(1.5); }
+  .rail button.on-dark .dot{ background:rgba(237,228,216,0.4); }
+  .rail button.on-dark.active .dot{ background:var(--terracota-tint); }
+  @media (max-width: 860px){ .rail{ display:none; } }
+
+  .brandmark{
+    position:fixed; top:26px; left:26px; z-index:60;
+    font-family:'Fraunces', serif; font-weight:600; font-size:14px;
+    letter-spacing:0.03em;
+    color:var(--ink);
+    mix-blend-mode:difference;
+    filter:invert(1) grayscale(1) brightness(1.6);
+  }
+  .counter{
+    position:fixed; bottom:26px; left:26px; z-index:60;
+    font-size:11px; letter-spacing:.12em;
+    color:var(--ink);
+    mix-blend-mode:difference;
+    filter:invert(1) grayscale(1) brightness(1.6);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (max-width:640px){ .brandmark,.counter{ display:none; } }
+
+  section{
+    min-height:100vh;
+    width:100%;
+    position:relative;
+    padding: 110px 8vw 90px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+  section.dark{ background:var(--oliva); color:var(--areia-soft); }
+  section.dark h1, section.dark h2, section.dark h3{ color:var(--cream); }
+  section.tinted{ background:var(--areia-soft); }
+  section.terra{ background:var(--terracota); color:var(--cream); }
+
+  .reveal{ opacity:0; transform:translateY(26px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+  .reveal.d1{ transition-delay:.08s; }
+  .reveal.d2{ transition-delay:.16s; }
+  .reveal.d3{ transition-delay:.24s; }
+  .reveal.d4{ transition-delay:.32s; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    .reveal{ opacity:1; transform:none; transition:none; }
+  }
+
+  .kicker-num{
+    font-family:'Fraunces', serif;
+    font-weight:300;
+    font-style:italic;
+    color:var(--terracota);
+    font-size:15px;
+  }
+  section.dark .kicker-num{ color:var(--terracota-tint); }
+
+  p{ line-height:1.65; color:var(--ink-soft); font-size:16.5px; font-weight:300; }
+  section.dark p{ color:rgba(237,228,216,0.78); }
+  section.terra p{ color:rgba(255,253,249,0.88); }
+
+  .max{ max-width:1180px; margin:0 auto; width:100%; }
+
+  /* ============ 00 COVER ============ */
+  #s0{
+    background:
+      radial-gradient(1100px 700px at 82% -10%, rgba(201,123,99,0.28), transparent 60%),
+      radial-gradient(900px 600px at -10% 110%, rgba(63,74,60,0.18), transparent 55%),
+      var(--areia);
+    padding-top:0; padding-bottom:0;
+  }
+  .cover-wrap{ max-width:1180px; margin:0 auto; width:100%; }
+  .cover-top{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    margin-bottom:8vh;
+  }
+  .cover-top .tag{
+    text-align:right; font-size:12px; letter-spacing:.1em; color:var(--ink-soft);
+    line-height:1.6;
+  }
+  .cover-name{
+    font-size: clamp(64px, 12vw, 168px);
+    line-height:0.86;
+    font-weight:500;
+    letter-spacing:-0.02em;
+  }
+  .cover-name em{ font-style:italic; font-weight:400; color:var(--terracota-deep); }
+  .cover-sub{
+    margin-top:26px;
+    max-width:560px;
+    font-size:19px;
+    font-weight:300;
+    color:var(--ink-soft);
+    line-height:1.6;
+  }
+  .cover-bottom{
+    margin-top:9vh;
+    display:flex; justify-content:space-between; align-items:flex-end;
+    flex-wrap:wrap; gap:26px;
+    border-top:1px solid var(--line);
+    padding-top:26px;
+  }
+  .swatch-row{ display:flex; gap:0; }
+  .swatch-row div{ width:46px; height:46px; }
+  .cover-tagline{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:400;
+    font-size:22px; color:var(--oliva);
+  }
+
+  /* ============ 01 THESIS ============ */
+  .thesis-quote{
+    font-size: clamp(30px, 5.4vw, 62px);
+    line-height:1.12;
+    font-weight:400;
+    max-width:960px;
+  }
+  .thesis-quote em{ color:var(--terracota-deep); font-style:italic; font-weight:500; }
+  .thesis-body{ max-width:620px; margin-top:34px; display:flex; flex-direction:column; gap:16px; }
+  .thesis-body p{ font-size:17.5px; }
+
+  /* ============ pillars / mission / vision ============ */
+  .pillar-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    margin-top:48px;
+  }
+  .pillar-card{ background:var(--areia-soft); padding:34px 30px; }
+  .pillar-card .n{ font-family:'Fraunces',serif; font-style:italic; color:var(--terracota-deep); font-size:14px; }
+  .pillar-card h3{ font-size:21px; margin:14px 0 10px; }
+  .pillar-card p{ font-size:14.5px; }
+  @media (max-width:860px){ .pillar-grid{ grid-template-columns:1fr; } }
+
+  .values-strip{
+    display:flex; flex-wrap:wrap; gap:12px; margin-top:22px;
+  }
+  .values-strip span{
+    border:1px solid var(--line-on-dark);
+    padding:9px 18px;
+    border-radius:100px;
+    font-size:13px;
+    letter-spacing:.03em;
+  }
+
+  /* ============ personas ============ */
+  .persona-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:28px;
+    margin-top:44px;
+  }
+  .persona-card{
+    background:var(--cream);
+    border:1px solid var(--line);
+    padding:30px 26px;
+    position:relative;
+  }
+  .persona-card .age{
+    font-family:'Fraunces',serif; font-size:52px; font-style:italic; font-weight:400;
+    color:var(--rosa-tint);
+    line-height:1;
+  }
+  .persona-card h3{ font-size:19px; margin-top:8px; }
+  .persona-card .role{ font-size:12.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft); margin:4px 0 16px; }
+  .persona-card .quote{ font-family:'Fraunces',serif; font-style:italic; font-size:15.5px; color:var(--oliva); line-height:1.5; margin-bottom:16px; }
+  .persona-card .need{ font-size:13.5px; border-top:1px solid var(--line); padding-top:14px; }
+  .persona-card .need b{ display:block; color:var(--ink); font-weight:600; font-size:11px; letter-spacing:.08em; text-transform:uppercase; margin-bottom:4px; }
+  @media (max-width:860px){ .persona-grid{ grid-template-columns:1fr; } }
+
+  /* ============ positioning quadrant ============ */
+  .quad-wrap{
+    display:grid; grid-template-columns: 1fr 1.3fr; gap:60px; align-items:center; margin-top:40px;
+  }
+  .quad{
+    aspect-ratio:1/1;
+    position:relative;
+    border:1px solid var(--line);
+  }
+  .quad::before,.quad::after{
+    content:""; position:absolute; background:var(--line);
+  }
+  .quad::before{ left:50%; top:0; bottom:0; width:1px; }
+  .quad::after{ top:50%; left:0; right:0; height:1px; }
+  .quad-axis{ position:absolute; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); }
+  .qa-top{ top:-24px; left:50%; transform:translateX(-50%); }
+  .qa-bottom{ bottom:-24px; left:50%; transform:translateX(-50%); }
+  .qa-left{ left:-8px; top:50%; transform:translateY(-50%) rotate(-90deg) translateX(50%); transform-origin:left center; }
+  .qa-right{ right:-8px; top:50%; transform:translateY(-50%) rotate(90deg) translateX(-50%); transform-origin:right center; }
+  .qdot{
+    position:absolute;
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    transform:translate(-50%,-50%);
+    font-size:11px; text-align:center; white-space:nowrap;
+  }
+  .qdot i{ width:10px; height:10px; border-radius:50%; background:var(--oliva); display:block; }
+  .qdot.hero i{ width:16px; height:16px; background:var(--terracota-deep); box-shadow:0 0 0 5px rgba(201,123,99,0.18); }
+  .qdot.hero{ font-weight:600; }
+  .quad-legend{ display:flex; flex-direction:column; gap:18px; }
+  .quad-legend .item{ display:flex; gap:14px; align-items:flex-start; border-bottom:1px solid var(--line); padding-bottom:14px; }
+  .quad-legend .item i{ width:9px; height:9px; border-radius:50%; background:var(--oliva); margin-top:6px; flex-shrink:0; }
+  .quad-legend .item.hero i{ background:var(--terracota-deep); }
+  .quad-legend b{ display:block; font-size:14.5px; font-weight:600; }
+  .quad-legend span{ font-size:13px; color:var(--ink-soft); }
+  @media (max-width:860px){ .quad-wrap{ grid-template-columns:1fr; } }
+
+  /* ============ identity: color + type ============ */
+  .id-grid{ display:grid; grid-template-columns:1.1fr 1fr; gap:70px; margin-top:44px; align-items:start; }
+  .swatch-list{ display:flex; flex-direction:column; }
+  .swatch-item{
+    display:flex; align-items:center; gap:22px;
+    padding:20px 0; border-bottom:1px solid var(--line);
+  }
+  .swatch-item .chip{ width:64px; height:64px; flex-shrink:0; border:1px solid var(--line); }
+  .swatch-item .meta b{ display:block; font-size:15.5px; font-weight:600; }
+  .swatch-item .meta span{ font-size:12.5px; color:var(--ink-soft); letter-spacing:.03em; font-variant-numeric: tabular-nums;}
+  .swatch-item .meta em{ display:block; font-size:12.5px; font-style:normal; color:var(--ink-soft); margin-top:3px; max-width:340px; }
+
+  .type-sample{ border:1px solid var(--line); padding:30px; background:var(--cream); margin-bottom:22px; }
+  .type-sample .tlabel{ font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--terracota-deep); margin-bottom:14px; font-weight:600; }
+  .type-sample .tbig{ font-family:'Fraunces',serif; font-size:40px; font-weight:500; line-height:1.05; }
+  .type-sample.sans .tbig{ font-family:'Jost',sans-serif; font-size:15px; letter-spacing:.14em; text-transform:uppercase; font-weight:500; }
+  .type-sample .tnote{ margin-top:14px; font-size:12px; color:var(--ink-soft); }
+
+  /* ============ voice do/dont ============ */
+  .voice-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:22px; margin-top:44px; }
+  .voice-card{ background:var(--oliva-deep); border:1px solid var(--line-on-dark); padding:26px; }
+  .voice-card h3{ font-size:18px; margin-bottom:14px; color:var(--terracota-tint); font-style:italic; font-family:'Fraunces',serif; font-weight:500;}
+  .voice-row{ display:flex; gap:10px; align-items:flex-start; margin-bottom:10px; font-size:13.5px; }
+  .voice-row .tag{ font-size:10px; letter-spacing:.08em; text-transform:uppercase; font-weight:700; padding:2px 8px; border-radius:3px; flex-shrink:0; margin-top:2px; }
+  .voice-row.do .tag{ background:rgba(201,123,99,0.25); color:var(--terracota-tint); }
+  .voice-row.dont .tag{ background:rgba(237,228,216,0.1); color:rgba(237,228,216,0.5); }
+  .voice-row span:last-child{ color:rgba(237,228,216,0.82); line-height:1.5; }
+  @media (max-width:860px){ .voice-grid{ grid-template-columns:1fr; } }
+
+  /* ============ manifesto ============ */
+  #manifesto{
+    background:var(--oliva-deep);
+    color:var(--cream);
+    align-items:center;
+  }
+  .manifesto-wrap{ max-width:820px; margin:0 auto; text-align:left; position:relative; }
+  .manifesto-mark{ font-family:'Fraunces',serif; font-size:120px; font-style:italic; color:var(--terracota); opacity:.4; line-height:0.6; }
+  .manifesto-text{
+    font-family:'Fraunces',serif;
+    font-size:clamp(24px,3.6vw,38px);
+    font-weight:400; font-style:italic;
+    line-height:1.42;
+    color:var(--areia-soft);
+  }
+  .manifesto-text b{ font-weight:600; font-style:normal; color:var(--terracota-tint); }
+  .manifesto-sign{ margin-top:38px; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:rgba(237,228,216,0.5); }
+
+  /* ============ messaging hierarchy ============ */
+  .msg-level{ border-top:1px solid var(--line); padding:26px 0; }
+  .msg-level .lv{ font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--terracota-deep); font-weight:600; margin-bottom:8px; }
+  .msg-level h2{ font-size:clamp(24px,3vw,38px); font-weight:500; max-width:820px; }
+  .msg-level p.support{ font-size:16.5px; max-width:680px; margin-top:8px; color:var(--ink-soft); }
+  .msg-cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:18px; }
+  .msg-card{ background:var(--cream); border:1px solid var(--line); padding:22px; }
+  .msg-card b{ display:block; font-family:'Fraunces',serif; font-size:17px; font-weight:600; margin-bottom:8px; color:var(--rosa-deep); }
+  .msg-card p{ font-size:13.5px; }
+  @media (max-width:860px){ .msg-cards{ grid-template-columns:1fr; } }
+
+  /* ============ naming gauge ============ */
+  .naming-wrap{ display:grid; grid-template-columns:auto 1fr; gap:70px; align-items:center; margin-top:40px; }
+  .gauge{ width:200px; height:200px; border-radius:50%; position:relative; flex-shrink:0;
+    background: conic-gradient(var(--terracota-deep) 0turn 0.75turn, var(--line) 0.75turn 1turn); }
+  .gauge::before{ content:""; position:absolute; inset:16px; border-radius:50%; background:var(--areia-soft); }
+  .gauge .val{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:'Fraunces',serif; }
+  .gauge .val b{ font-size:44px; font-weight:500; }
+  .gauge .val span{ font-size:11px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); }
+  .naming-points{ display:flex; flex-direction:column; gap:0; }
+  .naming-points .row{ display:flex; gap:16px; padding:12px 0; border-bottom:1px solid var(--line); font-size:14px; }
+  .naming-points .row b{ min-width:190px; flex-shrink:0; font-weight:600; }
+  .naming-points .row span{ color:var(--ink-soft); }
+  @media (max-width:860px){ .naming-wrap{ grid-template-columns:1fr; } .naming-points .row{ flex-direction:column; gap:4px; } }
+
+  /* ============ packaging / mala vip ============ */
+  .pack-wrap{ display:grid; grid-template-columns:0.9fr 1.1fr; gap:70px; align-items:center; margin-top:40px; }
+  .mala{
+    width:100%; aspect-ratio:4/5; background:var(--terracota);
+    position:relative; border-radius:6px;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:var(--shadow);
+  }
+  .mala::before{ content:""; position:absolute; inset:18px; border:1px dashed rgba(255,253,249,0.35); border-radius:3px; }
+  .mala .seal{ color:var(--areia-soft); width:118px; height:118px; }
+  .mala .seal span{ font-size:17px; }
+  .pack-steps .step{ display:flex; gap:18px; padding:18px 0; border-top:1px solid var(--line); }
+  .pack-steps .step:last-child{ border-bottom:1px solid var(--line); }
+  .pack-steps .num{ font-family:'Fraunces',serif; font-style:italic; color:var(--terracota-deep); font-size:20px; flex-shrink:0; width:34px; }
+  .pack-steps b{ display:block; font-size:15.5px; margin-bottom:4px; }
+  .pack-steps p{ font-size:13.5px; }
+  @media (max-width:860px){ .pack-wrap{ grid-template-columns:1fr; } .mala{ max-width:280px; margin:0 auto; } }
+
+  /* ============ launch timeline ============ */
+  .timeline{ display:grid; grid-template-columns:repeat(4,1fr); gap:0; margin-top:56px; position:relative; }
+  .timeline::before{ content:""; position:absolute; top:11px; left:0; right:0; height:1px;
+    background-image: repeating-linear-gradient(90deg, var(--terracota-deep) 0 7px, transparent 7px 15px); }
+  .tl-item{ padding-right:24px; }
+  .tl-item .dot{ width:23px; height:23px; border-radius:50%; background:var(--areia-soft); border:1.5px solid var(--terracota-deep); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:var(--terracota-deep); margin-bottom:20px; position:relative; z-index:2; }
+  .tl-item h3{ font-size:16.5px; margin-bottom:10px; }
+  .tl-item ul{ list-style:none; display:flex; flex-direction:column; gap:8px; }
+  .tl-item li{ font-size:13px; color:var(--ink-soft); padding-left:14px; position:relative; }
+  .tl-item li::before{ content:"—"; position:absolute; left:0; color:var(--terracota); }
+  @media (max-width:860px){ .timeline{ grid-template-columns:1fr; gap:34px; } .timeline::before{ display:none; } }
+
+  /* ============ architecture ============ */
+  .arch-wrap{ display:flex; flex-direction:column; align-items:center; margin-top:56px; gap:0; }
+  .arch-root{ background:var(--oliva); color:var(--cream); padding:20px 42px; font-family:'Fraunces',serif; font-size:20px; font-weight:500; }
+  .arch-line{ width:1px; height:40px; background-image: repeating-linear-gradient(180deg, var(--oliva) 0 6px, transparent 6px 12px); }
+  .arch-branches{ display:flex; gap:0; position:relative; width:100%; max-width:640px; justify-content:space-between; }
+  .arch-branches::before{ content:""; position:absolute; top:-40px; left:25%; right:25%; height:1px; background:var(--oliva); }
+  .arch-child{ border:1px solid var(--line); background:var(--cream); padding:22px 26px; width:47%; text-align:center; position:relative; }
+  .arch-child::before{ content:""; position:absolute; top:-40px; left:50%; width:1px; height:40px; background-image: repeating-linear-gradient(180deg, var(--oliva) 0 6px, transparent 6px 12px); }
+  .arch-child b{ display:block; font-family:'Fraunces',serif; font-size:16.5px; margin-bottom:6px; }
+  .arch-child span{ font-size:12.5px; color:var(--ink-soft); }
+  @media (max-width:640px){ .arch-branches{ flex-direction:column; gap:40px; align-items:center; } .arch-child{ width:100%; max-width:280px; } .arch-branches::before{ display:none; } }
+
+  /* ============ audit scorecard ============ */
+  .score-list{ margin-top:44px; display:flex; flex-direction:column; gap:18px; max-width:760px; }
+  .score-row{ display:grid; grid-template-columns:220px 1fr 46px; align-items:center; gap:18px; }
+  .score-row .label{ font-size:14px; font-weight:500; }
+  .score-track{ height:8px; background:var(--line); position:relative; }
+  .score-fill{ height:100%; background:var(--terracota-deep); width:0%; transition:width 1.1s var(--ease); }
+  .score-row .val{ font-family:'Fraunces',serif; font-style:italic; font-size:14px; text-align:right; color:var(--ink-soft); }
+  @media (max-width:640px){ .score-row{ grid-template-columns:1fr; gap:6px; } .score-row .val{ text-align:left; } }
+
+  /* ============ closing ============ */
+  #close{
+    background:var(--areia);
+    align-items:center; text-align:center;
+  }
+  .close-tag{ font-family:'Fraunces',serif; font-style:italic; font-weight:400;
+    font-size:clamp(34px,6vw,74px); color:var(--oliva); max-width:900px; margin:0 auto; }
+  .close-sub{ margin-top:24px; font-size:15px; letter-spacing:.05em; color:var(--ink-soft); }
+  .close-swatches{ display:flex; gap:0; margin:44px auto 0; width:fit-content; box-shadow:var(--shadow); }
+  .close-swatches div{ width:56px; height:56px; }
+
+  .footnote{
+    position:absolute; bottom:34px; left:8vw; right:8vw;
+    display:flex; justify-content:space-between; font-size:11px; letter-spacing:.06em;
+    color:var(--ink-soft); opacity:.65;
+  }
+  section.dark .footnote, #manifesto .footnote{ color:rgba(237,228,216,0.5); }
+  @media (max-width:640px){ .footnote{ position:static; margin-top:50px; flex-direction:column; gap:6px; } }
+</style>
+</head>
+<body>
+
+  <div class="brandmark">TF CONCEPT</div>
+  <div class="counter"><span id="curSlide">01</span> / 15</div>
+
+  <nav class="rail" id="rail"></nav>
+
+  <!-- 00 COVER -->
+  <section id="s0" data-label="Capa">
+    <div class="cover-wrap">
+      <div class="cover-top">
+        <div class="eyebrow">Brand Suite · 2026</div>
+        <div class="tag">Estratégia, identidade<br>e voz de marca</div>
+      </div>
+      <h1 class="cover-name reveal in">TF <em>Concept</em></h1>
+      <p class="cover-sub reveal in d1">Moda para mulheres de todas as idades. Sofisticação, conforto e a experiência Mala VIP — construídos sobre a recusa a uma idade certa para se sentir bem.</p>
+      <div class="cover-bottom">
+        <div class="swatch-row">
+          <div style="background:var(--terracota)"></div>
+          <div style="background:var(--rosa)"></div>
+          <div style="background:var(--oliva)"></div>
+          <div style="background:var(--cream); border:1px solid var(--line)"></div>
+        </div>
+        <div class="cover-tagline">"Toda idade. Todo movimento."</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 THESIS -->
+  <section id="s1" data-label="Diagnóstico">
+    <div class="max">
+      <div class="eyebrow reveal in">01 — O que é a TF Concept</div>
+      <p class="thesis-quote reveal in d1" style="margin-top:22px;">A moda fitness sempre ofereceu duas opções: o <em>técnico e frio</em>, ou o <em>infantilizado e raso</em>. Nenhuma das duas via a mulher de verdade.</p>
+      <div class="thesis-body reveal in d2">
+        <p>A TF Concept nasceu como uma recusa a essa escolha. Começou no fitness, porque foi ali que a lacuna ficou mais óbvia primeiro — hoje é sobre como uma mulher se veste e se enxerga em qualquer contexto, não só no treino.</p>
+        <p>A marca entrega peças que atravessam o treino e o dia a dia, e uma experiência pouco comum no varejo de moda: a <b style="color:var(--oliva)">Mala VIP</b>, que leva as peças até a casa da cliente no Rio de Janeiro para experimentar com calma, sem pressão de loja.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 MISSION/VISION/VALUES -->
+  <section class="tinted" id="s2" data-label="Visão &amp; Missão">
+    <div class="max">
+      <div class="eyebrow reveal in">02 — Estratégia de Marca</div>
+      <div class="pillar-grid">
+        <div class="pillar-card reveal in d1">
+          <div class="n">Visão</div>
+          <h3>Referência em moda sem idade</h3>
+          <p>Ser a marca de referência em moda sem idade no Brasil — construída sobre conforto, sofisticação e representação de corpos reais.</p>
+        </div>
+        <div class="pillar-card reveal in d2">
+          <div class="n">Missão</div>
+          <h3>Autoestima todos os dias</h3>
+          <p>Entregar peças que permitam a uma mulher se sentir bem no próprio corpo, independente da idade — via design confortável e a experiência pessoal da Mala VIP, em vez de varejo impessoal.</p>
+        </div>
+        <div class="pillar-card reveal in d3">
+          <div class="n">Valores</div>
+          <h3>Real, acolhedora, presente</h3>
+          <p>Autoestima sem idade · Corpo real · Cuidado no atendimento · Sofisticação acessível.</p>
+        </div>
+      </div>
+      <div class="values-strip reveal in d3" style="border-color:var(--line)">
+        <span style="border-color:var(--line)">Real</span>
+        <span style="border-color:var(--line)">Acolhedora</span>
+        <span style="border-color:var(--line)">Sofisticada</span>
+        <span style="border-color:var(--line)">Presente</span>
+        <span style="border-color:var(--line)">Confiante</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 PERSONAS -->
+  <section id="s3" data-label="Público">
+    <div class="max">
+      <div class="eyebrow reveal in">03 — Público-Alvo</div>
+      <h2 class="reveal in d1" style="font-size:clamp(24px,3vw,36px); margin-top:16px; max-width:640px;">Mulheres de 25 a 60+ anos que recusam a ideia de uma "idade certa" para se vestir bem.</h2>
+      <div class="persona-grid">
+        <div class="persona-card reveal in d1">
+          <div class="age">34</div>
+          <h3>Camila</h3>
+          <div class="role">Gerente de projetos · Rio de Janeiro</div>
+          <div class="quote">"Não quero trocar de roupa três vezes por dia — quero uma peça que funcione do escritório ao treino."</div>
+          <div class="need"><b>Como a TF resolve</b>Peças que atravessam contextos sem parecer "roupa de academia" fora do horário de treino.</div>
+        </div>
+        <div class="persona-card reveal in d2">
+          <div class="age">52</div>
+          <h3>Marisa</h3>
+          <div class="role">Empresária · Rio de Janeiro</div>
+          <div class="quote">Recusa se vestir "jovem demais" ou "resignada demais" — quer se sentir ela mesma.</div>
+          <div class="need"><b>Como a TF resolve</b>Propósito de marca declarado e paleta atemporal, não ligada a tendência de temporada.</div>
+        </div>
+        <div class="persona-card reveal in d3">
+          <div class="age">24</div>
+          <h3>Beatriz</h3>
+          <div class="role">Universitária</div>
+          <div class="quote">Acompanha estética e tendências nas redes, com orçamento mais limitado.</div>
+          <div class="need"><b>Como a TF resolve</b>Posicionamento premium acessível, não luxo inacessível.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 POSITIONING QUADRANT -->
+  <section class="tinted" id="s4" data-label="Posicionamento">
+    <div class="max">
+      <div class="eyebrow reveal in">04 — Posicionamento Competitivo</div>
+      <div class="quad-wrap">
+        <div class="quad reveal in d1">
+          <div class="quad-axis qa-top">Lifestyle</div>
+          <div class="quad-axis qa-bottom">Técnico / Performance</div>
+          <div class="quad-axis qa-left">Público jovem</div>
+          <div class="quad-axis qa-right">Todas as idades</div>
+
+          <div class="qdot hero" style="top:22%; right:12%;"><i></i>TF Concept</div>
+          <div class="qdot" style="top:38%; left:30%;"><i></i>Alto Giro</div>
+          <div class="qdot" style="top:30%; left:42%;"><i></i>Vestem</div>
+          <div class="qdot" style="top:20%; left:20%;"><i></i>Live!</div>
+          <div class="qdot" style="bottom:15%; right:22%;"><i></i>Selene</div>
+          <div class="qdot" style="bottom:12%; left:24%;"><i></i>Body For Sure</div>
+        </div>
+        <div class="quad-legend reveal in d2">
+          <div class="item hero"><i></i><div><b>TF Concept</b><span>Único quadrante lifestyle + todas as idades, hoje sem concorrente direto instalado ali.</span></div></div>
+          <div class="item"><i></i><div><b>Alto Giro &amp; Vestem</b><span>Tecnologia, conforto e variedade — território técnico/lifestyle, público jovem-adulto amplo.</span></div></div>
+          <div class="item"><i></i><div><b>Live!</b><span>Nomes de linha urbanos, pegada jovem/street.</span></div></div>
+          <div class="item"><i></i><div><b>Selene</b><span>Tradicional, catálogo segmentado por faixa etária — o oposto filosófico da TF Concept.</span></div></div>
+          <div class="item"><i></i><div><b>Body For Sure</b><span>Foco em modelagem e estética corporal.</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 IDENTITY : color + type -->
+  <section id="s5" data-label="Identidade">
+    <div class="max">
+      <div class="eyebrow reveal in">05 — Identidade Visual</div>
+      <div class="id-grid">
+        <div class="swatch-list reveal in d1">
+          <div class="swatch-item">
+            <div class="chip" style="background:#C9694E"></div>
+            <div class="meta"><b>Terracota</b><span>#C9694E · cor primária</span><em>Quente, terrosa, valoriza tons de pele reais. Cor de assinatura da marca.</em></div>
+          </div>
+          <div class="swatch-item">
+            <div class="chip" style="background:#C6567A"></div>
+            <div class="meta"><b>Rosa Queimado</b><span>#C6567A · cor de destaque</span><em>Injeta vivacidade sem virar doce — tom de pôr do sol, não de pastel.</em></div>
+          </div>
+          <div class="swatch-item">
+            <div class="chip" style="background:#3F4A3C"></div>
+            <div class="meta"><b>Verde Oliva Profundo</b><span>#3F4A3C · contraste / ancoragem</span><em>Traz maturidade e sofisticação, evita o "docinho".</em></div>
+          </div>
+          <div class="swatch-item">
+            <div class="chip" style="background:#EDE4D8"></div>
+            <div class="meta"><b>Areia</b><span>#EDE4D8 · fundo neutro</span><em>Atemporal, deixa as outras cores respirarem.</em></div>
+          </div>
+          <div class="swatch-item">
+            <div class="chip" style="background:#2B2B28"></div>
+            <div class="meta"><b>Preto Suave</b><span>#2B2B28 · texto / contorno</span><em>Utilitária — não é cor de marca.</em></div>
+          </div>
+        </div>
+        <div class="reveal in d2">
+          <div class="type-sample">
+            <div class="tlabel">Fraunces — display &amp; logotipo</div>
+            <div class="tbig">Autoestima sem idade</div>
+            <div class="tnote">Serifada, curvas quentes — peso editorial sem parecer clássica ou fria.</div>
+          </div>
+          <div class="type-sample sans">
+            <div class="tlabel">Futura PT — corpo &amp; etiquetas</div>
+            <div class="tbig">TODA IDADE, TODO MOVIMENTO</div>
+            <div class="tnote">Geométrica e limpa — contrasta com a serifa, funciona bem em tamanhos pequenos.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 VOICE -->
+  <section class="dark" id="s6" data-label="Voz">
+    <div class="max">
+      <div class="eyebrow on-dark reveal in">06 — Voz de Marca</div>
+      <h2 class="reveal in d1" style="font-size:clamp(22px,2.6vw,32px); max-width:680px; margin-top:14px; font-style:italic; font-weight:400;">"Soa como uma amiga que também é especialista — direta, acolhedora e sem paciência para clichê etário."</h2>
+      <div class="voice-grid">
+        <div class="voice-card reveal in d1">
+          <h3>Direta</h3>
+          <div class="voice-row do"><span class="tag">Do</span><span>"Essa peça serve treino e trabalho."</span></div>
+          <div class="voice-row dont"><span class="tag">Don't</span><span>"Essa peça incrível vai revolucionar seu guarda-roupa!"</span></div>
+        </div>
+        <div class="voice-card reveal in d2">
+          <h3>Acolhedora</h3>
+          <div class="voice-row do"><span class="tag">Do</span><span>"Feita pro seu corpo, do jeito que ele é."</span></div>
+          <div class="voice-row dont"><span class="tag">Don't</span><span>Qualquer menção a "corpo ideal" ou "esconder gordurinha".</span></div>
+        </div>
+        <div class="voice-card reveal in d3">
+          <h3>Confiante, sem arrogância</h3>
+          <div class="voice-row do"><span class="tag">Do</span><span>"Você sabe o que quer. A gente só facilita."</span></div>
+          <div class="voice-row dont"><span class="tag">Don't</span><span>"Somos a melhor marca do Brasil!"</span></div>
+        </div>
+        <div class="voice-card reveal in d4">
+          <h3>Presente, não performática</h3>
+          <div class="voice-row do"><span class="tag">Do</span><span>Responder dúvida real com resposta real.</span></div>
+          <div class="voice-row dont"><span class="tag">Don't</span><span>Respostas genéricas copiadas e coladas.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 MANIFESTO -->
+  <section id="manifesto" data-label="Manifesto">
+    <div class="manifesto-wrap">
+      <div class="manifesto-mark reveal in">"</div>
+      <p class="manifesto-text reveal in d1">Alguém, em algum momento, te disse que já passou da hora. De treinar pesado. De usar aquela roupa. De se sentir bonita sem se explicar.<br><br>Nós recusamos isso. Acreditamos numa moda que atravessa o treino e o dia a dia sem pedir licença — que veste o corpo que existe, não o corpo padrão de vitrine.<br><br><b>Não existe idade certa. Só existe agora.</b></p>
+      <div class="manifesto-sign reveal in d2">Manifesto TF Concept</div>
+    </div>
+  </section>
+
+  <!-- 08 MESSAGING -->
+  <section class="tinted" id="s8" data-label="Mensagens">
+    <div class="max">
+      <div class="eyebrow reveal in">08 — Hierarquia de Mensagens</div>
+      <div class="msg-level reveal in d1">
+        <div class="lv">Nível 1 · Headline</div>
+        <h2>Autoestima não tem idade certa.</h2>
+      </div>
+      <div class="msg-level reveal in d2">
+        <div class="lv">Nível 2 · Declaração de apoio</div>
+        <p class="support">TF Concept veste mulheres de qualquer idade com peças que atravessam o treino e o dia a dia — e leva tudo até a sua casa para você experimentar com calma.</p>
+      </div>
+      <div class="msg-level reveal in d3">
+        <div class="lv">Nível 3 · Mensagens-chave</div>
+        <div class="msg-cards">
+          <div class="msg-card"><b>Feita pro corpo real</b><p>Modelagem pensada pra quem existe de verdade, testada em corpos e idades diferentes.</p></div>
+          <div class="msg-card"><b>Do treino ao dia a dia</b><p>Uma peça só, sem trocar de roupa três vezes — desenhada pra atravessar contextos.</p></div>
+          <div class="msg-card"><b>Experimente sem pressa</b><p>A Mala VIP leva as peças até você — serviço já validado no Rio de Janeiro.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 NAMING -->
+  <section id="s9" data-label="Naming">
+    <div class="max">
+      <div class="eyebrow reveal in">09 — Avaliação do Nome</div>
+      <div class="naming-wrap reveal in d1">
+        <div class="gauge"><div class="val"><b>7,5</b><span>/ 10</span></div></div>
+        <div class="naming-points">
+          <div class="row"><b>O que sugere</b><span>TF mantém a memorabilidade já validada; "Concept" sinaliza amplitude — mais que uma categoria única, uma ideia curada.</span></div>
+          <div class="row"><b>Encaixe de categoria</b><span>Funciona melhor agora que o portfólio passa de "só fitness" — mas depende da tagline para comunicar o diferencial "sem idade".</span></div>
+          <div class="row"><b>Potencial de logo</b><span>Forte — já testado e validado em 3 conceitos de identidade visual.</span></div>
+          <div class="row"><b>Recomendação</b><span>Manter TF Concept. A tagline "Toda idade. Todo movimento." deve sempre acompanhar o nome nos primeiros contatos.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 PACKAGING -->
+  <section class="tinted" id="s10" data-label="Mala VIP">
+    <div class="max">
+      <div class="eyebrow reveal in">10 — Experiência Mala VIP</div>
+      <div class="pack-wrap">
+        <div class="mala reveal in d1">
+          <div class="seal"><span>TF<br>Concept</span></div>
+        </div>
+        <div class="pack-steps reveal in d2">
+          <div class="step"><div class="num">01</div><div><b>Chegada</b><p>A mala chega fechada com o selo circular visível — já comunica cuidado antes mesmo de abrir.</p></div></div>
+          <div class="step"><div class="num">02</div><div><b>Abertura</b><p>Peças dobradas com cuidado, cartão de boas-vindas com a tagline por cima.</p></div></div>
+          <div class="step"><div class="num">03</div><div><b>Experimentação</b><p>A cliente experimenta com calma, em casa, no Rio de Janeiro — sem pressa e sem pressão de loja.</p></div></div>
+          <div class="step"><div class="num">04</div><div><b>Depois</b><p>A mala têxtil pode ser reaproveitada pela cliente, virando lembrança da marca.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 LAUNCH -->
+  <section id="s11" data-label="Lançamento">
+    <div class="max">
+      <div class="eyebrow reveal in">11 — Plano de Lançamento</div>
+      <div class="timeline reveal in d1">
+        <div class="tl-item"><div class="dot">01</div><h3>Interno</h3><ul><li>Alinhar identidade com a Thaís</li><li>Definir linguagem padrão de resposta</li></ul></div>
+        <div class="tl-item"><div class="dot">02</div><h3>Ativos próprios</h3><ul><li>Perfil e destaques do Instagram</li><li>Etiquetas e embalagem Mala VIP</li></ul></div>
+        <div class="tl-item"><div class="dot">03</div><h3>Lançamento público</h3><ul><li>Anúncio nas redes</li><li>Narrativa de continuidade</li></ul></div>
+        <div class="tl-item"><div class="dot">04</div><h3>Transição</h3><ul><li>Esgotar estoque com logo antigo</li><li>Sem troca de domínio ou @</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 ARCHITECTURE -->
+  <section class="tinted" id="s12" data-label="Arquitetura">
+    <div class="max">
+      <div class="eyebrow reveal in">12 — Arquitetura de Marca</div>
+      <p class="reveal in d1" style="max-width:560px; margin-top:12px;">Modelo recomendado: <b style="color:var(--oliva)">Branded House</b> — TF Concept é o nome-mãe; as linhas internas usam nomes descritivos, não marcas independentes.</p>
+      <div class="arch-wrap reveal in d2">
+        <div class="arch-root">TF Concept</div>
+        <div class="arch-line"></div>
+        <div class="arch-branches">
+          <div class="arch-child"><b>TF Concept Move</b><span>Linha voltada a treino — herda o legado "Fitnesswear"</span></div>
+          <div class="arch-child"><b>TF Concept Everyday</b><span>Linha voltada ao dia a dia</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 AUDIT -->
+  <section id="s13" data-label="Auditoria">
+    <div class="max">
+      <div class="eyebrow reveal in">13 — Auditoria de Marca</div>
+      <p class="reveal in d1" style="max-width:600px; margin-top:12px;">Estado atual, em meio ao processo de rebrand — reflete uma marca em transição, não um estado final. <b style="color:var(--terracota-deep)">Nota geral: 18/30.</b></p>
+      <div class="score-list reveal in d2" id="scoreList">
+        <div class="score-row" data-score="4"><div class="label">Clareza de posicionamento</div><div class="score-track"><div class="score-fill"></div></div><div class="val">4/5</div></div>
+        <div class="score-row" data-score="2"><div class="label">Consistência de identidade visual</div><div class="score-track"><div class="score-fill"></div></div><div class="val">2/5</div></div>
+        <div class="score-row" data-score="2"><div class="label">Consistência de mensagem</div><div class="score-track"><div class="score-fill"></div></div><div class="val">2/5</div></div>
+        <div class="score-row" data-score="2"><div class="label">Voz e tom</div><div class="score-track"><div class="score-fill"></div></div><div class="val">2/5</div></div>
+        <div class="score-row" data-score="4"><div class="label">Alinhamento de público</div><div class="score-track"><div class="score-fill"></div></div><div class="val">4/5</div></div>
+        <div class="score-row" data-score="4"><div class="label">Diferenciação competitiva</div><div class="score-track"><div class="score-fill"></div></div><div class="val">4/5</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 CLOSE -->
+  <section id="close" data-label="Fechamento">
+    <div>
+      <div class="eyebrow reveal in" style="justify-content:center;">TF Concept · Brand Suite</div>
+      <h2 class="close-tag reveal in d1">"Toda idade.<br>Todo movimento."</h2>
+      <p class="close-sub reveal in d2">Estratégia, posicionamento e identidade construídos para provar, sem precisar de texto explicativo, que moda pode ser sofisticada e atemporal.</p>
+      <div class="close-swatches reveal in d3">
+        <div style="background:var(--terracota)"></div>
+        <div style="background:var(--rosa)"></div>
+        <div style="background:var(--oliva)"></div>
+        <div style="background:var(--areia)"></div>
+      </div>
+    </div>
+  </section>
+
+<script>
+  // section registry for nav rail + counter
+  const sections = Array.from(document.querySelectorAll('section'));
+  const rail = document.getElementById('rail');
+
+  sections.forEach((sec, i) => {
+    const btn = document.createElement('button');
+    const isDark = sec.classList.contains('dark') || sec.id === 'manifesto';
+    if (isDark) btn.classList.add('on-dark');
+    btn.innerHTML = `<span class="lbl">${sec.dataset.label}</span><span class="dot"></span>`;
+    btn.addEventListener('click', () => sec.scrollIntoView({behavior:'smooth'}));
+    rail.appendChild(btn);
+  });
+  const railBtns = Array.from(rail.children);
+  const counterEl = document.getElementById('curSlide');
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const idx = sections.indexOf(entry.target);
+      if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+        railBtns.forEach(b => b.classList.remove('active'));
+        railBtns[idx].classList.add('active');
+        counterEl.textContent = String(idx + 1).padStart(2, '0');
+      }
+      if (entry.isIntersecting) {
+        entry.target.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+      }
+    });
+  }, { threshold: [0, 0.5] });
+
+  sections.forEach(sec => io.observe(sec));
+
+  // animate score bars once visible
+  const scoreList = document.getElementById('scoreList');
+  if (scoreList) {
+    const scoreIO = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          scoreList.querySelectorAll('.score-row').forEach(row => {
+            const pct = (row.dataset.score / 5) * 100;
+            row.querySelector('.score-fill').style.width = pct + '%';
+          });
+          scoreIO.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+    scoreIO.observe(scoreList);
+  }
+</script>
+
+</body>
+</html>
